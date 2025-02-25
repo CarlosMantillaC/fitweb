@@ -1,59 +1,73 @@
 <?php
 // ==============================================
-// 1. CONEXIÓN A LA BASE DE DATOS (NEON.TECH)
+// 1. CONEXIÓN A LA BASE DE DATOS (CON POOLING Y TIMEOUT)
 // ==============================================
-
-$host = "ep-rapid-forest-a4udz660-pooler.us-east-1.aws.neon.tech"; // Solo el host
+$host = "ep-rapid-forest-a4udz660-pooler.us-east-1.aws.neon.tech";
 $dbname = "neondb";
 $user = "neondb_owner";
 $password = "npg_v2EtfO0nqIop";
 $port = "5432";
 
-
 try {
-    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
+    // Añadir connect_timeout y asegurar SSL
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require;connect_timeout=10";
+    
     $pdo = new PDO($dsn, $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // ==============================================
+    // 2. PROCESAMIENTO DEL FORMULARIO
+    // ==============================================
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $nombre = htmlspecialchars($_POST['nombre']);
+        $email = htmlspecialchars($_POST['email']);
+        $edad = intval($_POST['edad']);
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO usuarios (nombre, email, edad) 
+                VALUES (:nombre, :email, :edad)
+            ");
+            
+            $stmt->execute([
+                ':nombre' => $nombre,
+                ':email' => $email,
+                ':edad' => $edad
+            ]);
+            
+            $mensaje = "¡Usuario registrado exitosamente!";
+            
+            // Cerrar statement
+            $stmt = null;
+            
+        } catch (PDOException $e) {
+            $error = "Error al insertar: " . $e->getMessage();
+        }
+    }
+
+    // ==============================================
+    // 3. OBTENER REGISTROS EXISTENTES
+    // ==============================================
+    try {
+        $stmt = $pdo->query("SELECT * FROM usuarios ORDER BY id DESC");
+        $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Cerrar statement
+        $stmt = null;
+        
+    } catch (PDOException $e) {
+        die("Error al obtener usuarios: " . $e->getMessage());
+    }
+
+    // Cerrar conexión principal
+    $pdo = null;
+
 } catch (PDOException $e) {
     die("Error de conexión: " . $e->getMessage());
 }
-
-// ==============================================
-// 2. PROCESAMIENTO DEL FORMULARIO
-// ==============================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = htmlspecialchars($_POST['nombre']);
-    $email = htmlspecialchars($_POST['email']);
-    $edad = intval($_POST['edad']);
-
-    try {
-        $stmt = $pdo->prepare("
-            INSERT INTO usuarios (nombre, email, edad) 
-            VALUES (:nombre, :email, :edad)
-        ");
-        
-        $stmt->execute([
-            ':nombre' => $nombre,
-            ':email' => $email,
-            ':edad' => $edad
-        ]);
-        
-        $mensaje = "¡Usuario registrado exitosamente!";
-    } catch (PDOException $e) {
-        $error = "Error al insertar: " . $e->getMessage();
-    }
-}
-
-// ==============================================
-// 3. OBTENER REGISTROS EXISTENTES
-// ==============================================
-try {
-    $stmt = $pdo->query("SELECT * FROM usuarios ORDER BY id DESC");
-    $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Error al obtener usuarios: " . $e->getMessage());
-}
 ?>
+
+<!-- Resto del HTML -->
 
 <!DOCTYPE html>
 <html lang="es">
