@@ -2,10 +2,10 @@
 // ==============================================
 // 1. CONEXIÓN A LA BASE DE DATOS (CON POOLING Y TIMEOUT)
 // ==============================================
-$host = "ep-rapid-forest-a4udz660-pooler.us-east-1.aws.neon.tech";
+$host = "ep-damp-salad-a4z2z0dt-pooler.us-east-1.aws.neon.tech";
 $dbname = "neondb";
 $user = "neondb_owner";
-$password = "npg_v2EtfO0nqIop";
+$password = "npg_vaReLlbf9E7X";
 $port = "5432";
 
 try {
