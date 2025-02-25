@@ -3,11 +3,12 @@
 // 1. CONEXIÓN A LA BASE DE DATOS (NEON.TECH)
 // ==============================================
 
-$host = getenv('postgresql://neondb_owner:npg_v2EtfO0nqIop@ep-rapid-forest-a4udz660-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require');
-$dbname = getenv('neondb');
-$user = getenv('neondb_owner');
-$password = getenv('npg_v2EtfO0nqIop');
-$port = getenv('5432');
+$host = "ep-rapid-forest-a4udz660-pooler.us-east-1.aws.neon.tech"; // Solo el host
+$dbname = "neondb";
+$user = "neondb_owner";
+$password = "npg_v2EtfO0nqIop";
+$port = "5432";
+
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
