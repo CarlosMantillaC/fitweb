@@ -1,4 +1,4 @@
-const API_URL = "https://ze2e.onrender.com";
+const API_URL = "https://fitweb-ze2e.onrender.com";
 
 // Cargar usuarios al iniciar
 document.addEventListener('DOMContentLoaded', cargarUsuarios);

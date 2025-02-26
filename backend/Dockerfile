@@ -8,5 +8,4 @@ RUN apt-get update && apt-get install -y libpq-dev \
 # Copiar archivos del backend al contenedor (desde la carpeta actual)
 COPY . /var/www/html/
 
-# Configurar puerto dinámico para Render
-ENV APACHE_PORT=$PORT
+EXPOSE 80
