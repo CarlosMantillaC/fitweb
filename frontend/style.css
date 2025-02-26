@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
     background: white;
     padding: 2rem;
@@ -24,9 +24,64 @@ h1 {
     margin-bottom: 2rem;
 }
 
-#content {
-    padding: 1rem;
-    background: #f8f9fa;
+h2 {
+    color: #1a73e8;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.form-section, .list-section {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    min-height: 200px;
+}
+
+button {
+    background: #1a73e8;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1557b0;
+}
+
+#usuariosList {
+    margin-top: 1rem;
+}
+
+.usuario-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.usuario-item:last-child {
+    border-bottom: none;
+}
+
+a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
