@@ -10,4 +10,3 @@ COPY . /var/www/html/
 
 # Configurar puerto dinámico para Render
 ENV APACHE_PORT=$PORT
-RUN echo "Listen ${APACHE_PORT}" > /etc/apache2/ports.conf
