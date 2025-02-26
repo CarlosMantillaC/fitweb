@@ -1,13 +1,17 @@
 <?php
-$host = "ep-rapid-forest-a4udz660-pooler.us-east-1.aws.neon.tech"; // Solo el host
+header("Access-Control-Allow-Origin: *"); // Permite CORS (en producción usa tu dominio)
+header("Content-Type: application/json");
+header("Access-Control-Allow-Methods: GET, POST");
+header("Access-Control-Allow-Headers: Content-Type");
+
+$host = "ep-damp-salad-a4z2z0dt-pooler.us-east-1.aws.neon.tech";
 $dbname = "neondb";
 $user = "neondb_owner";
-$password = "npg_v2EtfO0nqIop";
+$password = "npg_vaReLlbf9E7X";
 $port = "5432";
 
-
 try {
-    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require;connect_timeout=10";
     $pdo = new PDO($dsn, $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
@@ -50,76 +54,3 @@ try {
     die("Error al obtener usuarios: " . $e->getMessage());
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario de Usuarios</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
-        .form-container { background: #f4f4f4; padding: 20px; border-radius: 8px; }
-        .success { color: green; }
-        .error { color: red; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f8f9fa; }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h2>Registro de Usuarios</h2>
-
-        <?php if (isset($mensaje)): ?>
-            <p class="success"><?= $mensaje ?></p>
-        <?php endif; ?>
-
-        <?php if (isset($error)): ?>
-            <p class="error"><?= $error ?></p>
-        <?php endif; ?>
-
-        <form method="POST">
-            <div>
-                <label>Nombre:</label>
-                <input type="text" name="nombre" required>
-            </div>
-
-            <div>
-                <label>Email:</label>
-                <input type="email" name="email" required>
-            </div>
-
-            <div>
-                <label>Edad:</label>
-                <input type="number" name="edad" min="1" required>
-            </div>
-
-            <button type="submit">Registrar</button>
-        </form>
-    </div>
-
-    <h3>Usuarios Registrados</h3>
-    <?php if (!empty($usuarios)): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Edad</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($usuarios as $usuario): ?>
-                    <tr>
-                        <td><?= $usuario['id'] ?></td>
-                        <td><?= htmlspecialchars($usuario['nombre']) ?></td>
-                        <td><?= htmlspecialchars($usuario['email']) ?></td>
-                        <td><?= $usuario['edad'] ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p>No hay usuarios registrados.</p>
-    <?php endif;
