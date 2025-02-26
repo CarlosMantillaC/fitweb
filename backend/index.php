@@ -14,43 +14,28 @@ try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require;connect_timeout=10";
     $pdo = new PDO($dsn, $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
-}
 
-// ==============================================
-// 2. PROCESAMIENTO DEL FORMULARIO
-// ==============================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = htmlspecialchars($_POST['nombre']);
-    $email = htmlspecialchars($_POST['email']);
-    $edad = intval($_POST['edad']);
-
-    try {
-        $stmt = $pdo->prepare("
-            INSERT INTO usuarios (nombre, email, edad) 
-            VALUES (:nombre, :email, :edad)
-        ");
-
-        $stmt->execute([
-            ':nombre' => $nombre,
-            ':email' => $email,
-            ':edad' => $edad
-        ]);
-
-        $mensaje = "¡Usuario registrado exitosamente!";
-    } catch (PDOException $e) {
-        $error = "Error al insertar: " . $e->getMessage();
+    // Manejo de rutas
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['PATH_INFO'] === '/usuarios') {
+        $stmt = $pdo->query("SELECT * FROM usuarios ORDER BY id DESC");
+        $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($usuarios);
+        exit();
     }
-}
 
-// ==============================================
-// 3. OBTENER REGISTROS EXISTENTES
-// ==============================================
-try {
-    $stmt = $pdo->query("SELECT * FROM usuarios ORDER BY id DESC");
-    $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['PATH_INFO'] === '/usuarios') {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $stmt = $pdo->prepare("INSERT INTO usuarios (nombre, email, edad) VALUES (:nombre, :email, :edad)");
+        $stmt->execute([
+            ':nombre' => $data['nombre'],
+            ':email' => $data['email'],
+            ':edad' => $data['edad']
+        ]);
+        echo json_encode(['mensaje' => 'Usuario registrado exitosamente!']);
+        exit();
+    }
+
 } catch (PDOException $e) {
-    die("Error al obtener usuarios: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
 }
-?>
