@@ -1,8 +1,14 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // Permite CORS
+header("Access-Control-Allow-Origin: https://fitwebpro.netlify.app"); // Permitir Netlify
 header("Content-Type: application/json");
-header("Access-Control-Allow-Methods: GET, POST");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Manejo de preflight (opcional)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $host = "ep-damp-salad-a4z2z0dt-pooler.us-east-1.aws.neon.tech";
 $dbname = "neondb";
@@ -19,6 +25,11 @@ try {
     $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $request_uri = rtrim($request_uri, '/');
 
+    // Normalizar ruta para evitar problemas en Render
+    if (strpos($request_uri, '/index.php') === 0) {
+        $request_uri = str_replace('/index.php', '', $request_uri);
+    }
+
     // Manejo de rutas
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && $request_uri === '/usuarios') {
         $stmt = $pdo->query("SELECT * FROM usuarios ORDER BY id DESC");
@@ -29,21 +40,29 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $request_uri === '/usuarios') {
         $data = json_decode(file_get_contents('php://input'), true);
+        
+        if (!isset($data['nombre'], $data['email'], $data['edad'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Faltan datos requeridos']);
+            exit();
+        }
+
         $stmt = $pdo->prepare("INSERT INTO usuarios (nombre, email, edad) VALUES (:nombre, :email, :edad)");
         $stmt->execute([
             ':nombre' => $data['nombre'],
             ':email' => $data['email'],
             ':edad' => $data['edad']
         ]);
+
         echo json_encode(['mensaje' => 'Usuario registrado exitosamente!']);
         exit();
     }
 
     // Si la ruta no existe
     http_response_code(404);
-    echo json_encode(['error' => 'Ruta no encontrada']);
+    echo json_encode(['error' => 'Ruta no encontrada', 'ruta' => $request_uri]);
 
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => 'Error de base de datos', 'detalle' => $e->getMessage()]);
 }
