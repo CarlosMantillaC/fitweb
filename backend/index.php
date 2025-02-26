@@ -5,10 +5,10 @@ header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Configuración de la base de datos Neon (PostgreSQL)
-$host = getenv('ep-damp-salad-a4z2z0dt-pooler.us-east-1.aws.neon.tech');
-$dbname = getenv('neondb');
-$user = getenv('neondb_owner');
-$password = getenv('npg_vaReLlbf9E7X');
+$host = getenv('DB_HOST');
+$dbname = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
 
 try {
     $conn = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
