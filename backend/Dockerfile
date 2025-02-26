@@ -1,27 +1,17 @@
-# Imagen base correcta
+# Usar la imagen oficial de PHP con Apache
 FROM php:8.2-apache
 
 # Instalar extensiones de PostgreSQL
-RUN apt-get update && apt-get install -y libpq-dev \
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
-# Habilitar mod_rewrite en Apache para permitir .htaccess
+# Habilitar mod_rewrite
 RUN a2enmod rewrite
 
-# Configurar Apache para permitir .htaccess
-RUN echo '<Directory /var/www/html/>
-    AllowOverride All
-    Require all granted
-</Directory>' > /etc/apache2/sites-available/000-default.conf
+# Copiar el código PHP
+COPY index.php /var/www/html/
 
-# Copiar archivos del backend al contenedor
-COPY . /var/www/html/
-
-# Establecer permisos correctos para Apache
-RUN chown -R www-data:www-data /var/www/html
-
-# Reiniciar Apache para aplicar los cambios
-CMD ["apache2-foreground"]
-
-# Exponer el puerto 80
+# Configurar el puerto y permisos
 EXPOSE 80
+CMD ["apache2-foreground"]
