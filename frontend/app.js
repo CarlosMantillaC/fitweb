@@ -3,52 +3,46 @@ const API_URL = "https://fitweb-ze2e.onrender.com";
 // Cargar usuarios al iniciar
 document.addEventListener('DOMContentLoaded', cargarUsuarios);
 
-async function cargarUsuarios() {
-    try {
-        const response = await fetch(`${API_URL}/usuarios`);
-        const usuarios = await response.json();
-        renderizarUsuarios(usuarios);
-    } catch (error) {
-        mostrarMensaje("Error al cargar usuarios", "error");
-    }
+// Función para obtener usuarios
+async function obtenerUsuarios() {
+  try {
+      const response = await fetch(`${API_URL}/usuarios`);
+      if (!response.ok) throw new Error("Error en la respuesta");
+      const usuarios = await response.json();
+      console.log("Usuarios:", usuarios);
+      return usuarios;
+  } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+  }
 }
 
-document.getElementById("formUsuario").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const datos = {
-        nombre: document.getElementById("nombre").value,
-        email: document.getElementById("email").value,
-        edad: document.getElementById("edad").value
-    };
+// Función para registrar un usuario
+async function registrarUsuario(nombre, email, edad) {
+  try {
+      const response = await fetch(`${API_URL}/usuarios`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, email, edad }),
+      });
+      if (!response.ok) throw new Error("Error en la respuesta");
+      const resultado = await response.json();
+      console.log("Resultado:", resultado);
+      return resultado;
+  } catch (error) {
+      console.error("Error al registrar usuario:", error);
+  }
+}
 
-    try {
-        const response = await fetch(`${API_URL}/usuarios`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datos)
-        });
-        const resultado = await response.json();
-        mostrarMensaje(resultado.mensaje, "success");
-        cargarUsuarios(); // Recargar lista
-    } catch (error) {
-        mostrarMensaje("Error al registrar", "error");
-    }
+// Ejemplo de uso
+document.addEventListener('DOMContentLoaded', async () => {
+  const usuarios = await obtenerUsuarios();
+  console.log(usuarios);
 });
 
-function renderizarUsuarios(usuarios) {
-    const contenedor = document.getElementById("listaUsuarios");
-    contenedor.innerHTML = usuarios.map(usuario => `
-        <div class="usuario">
-            <p>ID: ${usuario.id}</p>
-            <p>Nombre: ${usuario.nombre}</p>
-            <p>Email: ${usuario.email}</p>
-            <p>Edad: ${usuario.edad}</p>
-        </div>
-    `).join("");
-}
-
-function mostrarMensaje(texto, tipo) {
-    const mensajeDiv = document.getElementById("mensaje");
-    mensajeDiv.className = tipo;
-    mensajeDiv.textContent = texto;
-}
+document.getElementById("formUsuario").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById("nombre").value;
+  const email = document.getElementById("email").value;
+  const edad = document.getElementById("edad").value;
+  await registrarUsuario(nombre, email, edad);
+});
