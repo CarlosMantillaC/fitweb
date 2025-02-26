@@ -5,7 +5,14 @@ FROM php:8.2-apache
 RUN apt-get update && apt-get install -y libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
-# Copiar archivos del backend al contenedor (desde la carpeta actual)
+# Habilitar mod_rewrite para que .htaccess funcione
+RUN a2enmod rewrite
+
+# Copiar archivos del backend al contenedor
 COPY . /var/www/html/
 
+# Establecer permisos y configuración de Apache
+RUN chown -R www-data:www-data /var/www/html
+
+# Exponer el puerto 80
 EXPOSE 80

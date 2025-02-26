@@ -21,13 +21,13 @@ try {
     $pdo = new PDO($dsn, $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Obtener la URI y limpiarla
-    $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    // Obtener la URI sin "index.php"
+    $request_uri = str_replace('/index.php', '', $_SERVER['REQUEST_URI']);
     $request_uri = rtrim($request_uri, '/');
 
-    // Normalizar ruta para evitar problemas en Render
-    if (strpos($request_uri, '/index.php') === 0) {
-        $request_uri = str_replace('/index.php', '', $request_uri);
+    // Normalizar rutas para evitar errores en Render
+    if ($request_uri === '') {
+        $request_uri = '/';
     }
 
     // Manejo de rutas
