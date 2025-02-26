@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Ejemplo de conexión con el backend
-    fetch('https://tu-backend-en-render.onrender.com/')
+    fetch('https://fitweb-ze2e.onrender.com/')
         .then(response => response.json())
         .then(data => {
             const contentDiv = document.getElementById('content');
